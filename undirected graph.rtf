@@ -1,0 +1,275 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\*\generator Riched20 10.0.17134}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang9 import java.util.*;\par
+\par
+class AdjList \{\par
+    int v;\par
+    ArrayList<Integer> arr[];\par
+    ArrayList<Integer> degree;\par
+    int parent[];\par
+    int connected = 0;\par
+    \par
+    AdjList(int v) \{\par
+        this.v = v;\par
+        arr = new ArrayList[v];\par
+        \par
+        for(int i = 0; i < v; i++) \{\par
+            arr[i] = new ArrayList<Integer>();\par
+        \}\par
+        degree = new ArrayList<Integer>();\par
+        parent = new int[v];\par
+        for(int i = 0; i < parent.length; i++) \{\par
+            parent[i] = -1;\par
+        \}\par
+    \}\par
+    \par
+    void addEdge(int i, int j) \{\par
+        arr[i].add(j);\par
+        if(i != j) \{\par
+            arr[j].add(i);\par
+        \}\par
+    \}\par
+    \par
+    void print() \{\par
+        for(int i = 0; i < v; i++) \{\par
+            int x = arr[i].size();\par
+            System.out.print(i);\par
+            for(int j = 0; j < x; j++) \{\par
+                System.out.print("->" + arr[i].get(j));\par
+            \}\par
+            System.out.println();\par
+        \}\par
+    \}\par
+    \par
+    int noSelfLoop() \{\par
+        int s = 0;\par
+        for(int i = 0; i < v; i++) \{\par
+            int x = arr[i].size();\par
+            for(int j = 0; j < x; j++) \{\par
+                if( i == arr[i].get(j)) \{\par
+                    s++;\par
+                    break;\par
+                \}\par
+            \}\par
+        \}\par
+        return s;\par
+    \}\par
+    \par
+    boolean checkSelfLoop(int i) \{\par
+        int x = arr[i].size();\par
+        \par
+        for(int j = 0; j < x; j++) \{\par
+            if(i == arr[i].get(j)) \{\par
+                return true;\par
+            \}\par
+        \}\par
+        \par
+        return false;\par
+    \}\par
+    \par
+    int findDegree(int i) \{\par
+        return arr[i].size();\par
+    \}\par
+    \par
+    ArrayList<Integer> findEachDegree() \{\par
+        for(int i = 0; i < v; i++) \{\par
+            int x = findDegree(i);\par
+            degree.add(x);\par
+        \}\par
+        return degree;\par
+    \}\par
+    \par
+    int noOfEdges() \{\par
+        int s = 0, c = 0;\par
+        for(int i = 0; i < v; i++) \{\par
+            int x = arr[i].size();\par
+            for(int j = 0; j < x; j++) \{\par
+                if(i == arr[i].get(j))\par
+                    s++;\par
+                else\par
+                    c++;\par
+            \}\par
+        \}\par
+        return c / 2 + s;\par
+    \}\par
+    \par
+    int vertex() \{\par
+        return this.v;\par
+    \}\par
+    \par
+    void DFSUtil(int v,boolean visited[]) \par
+    \{ \par
+        visited[v] = true; \par
+        System.out.print(v + " "); \par
+  \par
+        Iterator<Integer> i = arr[v].listIterator(); \par
+        while (i.hasNext()) \par
+        \{ \par
+            int n = i.next(); \par
+            if (!visited[n]) \par
+                DFSUtil(n,visited); \par
+        \} \par
+    \} \par
+  \par
+    void DFS() \par
+    \{ \par
+        boolean visited[] = new boolean[v]; \par
+  \par
+        for(int i = 0; i < v; ++i) \par
+            if(visited[i] == false) \{\par
+                DFSUtil(i, visited); \par
+                connected++;\par
+            \}\par
+            \par
+    \} \par
+    \par
+    int showConnected() \{\par
+        return connected;\par
+    \}\par
+    \par
+    \par
+    boolean isCyclicUtil(int v, boolean visited[], int parent) \par
+    \{ \par
+        visited[v] = true; \par
+        Integer i; \par
+  \par
+        Iterator<Integer> it = arr[v].iterator(); \par
+        while (it.hasNext()) \par
+        \{ \par
+            i = it.next(); \par
+  \par
+            if (!visited[i]) \par
+            \{ \par
+                if (isCyclicUtil(i, visited, v)) \par
+                    return true; \par
+            \} \par
+  \par
+            else if (i != parent) \par
+                return true; \par
+        \} \par
+        return false; \par
+    \} \par
+    \par
+    boolean checkCycle() \{\par
+        boolean visited[] = new boolean[v]; \par
+        for (int i = 0; i < v; i++) \par
+            visited[i] = false; \par
+  \par
+        for (int u = 0; u < v; u++) \par
+            if (!visited[u])  \par
+                if (isCyclicUtil(u, visited, -1)) \par
+                    return true; \par
+  \par
+        return false; \par
+    \}\par
+    \par
+    int[] getParents(int node, int par) \{\par
+        for(int i = 0 ; i < arr[node].size() ; ++i)\{\par
+            if(arr[node].get(i) != par)\{\par
+                if(parent[arr[node].get(i)] == -1) \{\par
+                    parent[arr[node].get(i)] = node ; \par
+                    getParents(arr[node].get(i) , node) ; \par
+                \}\par
+            \}\par
+        \}\par
+        \par
+        return parent;\par
+    \}\par
+    \par
+    int[] Parents() \{\par
+        int parentt[] = new int[v];\par
+        for(int i = 0; i < v; i++) \{\par
+            parentt = getParents(i, -1);\par
+        \}\par
+        return parentt;\par
+    \}\par
+    \par
+    int LCA(int u , int w, int root_node) \{\par
+        boolean visited[] = new boolean[v]; \par
+        \par
+        int c = 0;\par
+        int lca = 0; \par
+        while(true) \{\par
+            if(c >= v)\par
+                return -1;\par
+            visited[u] = true ; \par
+            if(u == root_node)  \{\par
+                break ; \par
+            \}\par
+            if(u == parent[u])\par
+                return -1;\par
+            u = parent[u]; \par
+            c++;\par
+        \}\par
+        \par
+        while(true) \{\par
+            if(visited[w]) \{\par
+                lca = w;    \par
+                break ;  \par
+            \}\par
+            w = parent[w] ; \par
+            //System.out.println(w);\par
+        \}\par
+        return lca ; \par
+    \}\par
+    \par
+\}\par
+\par
+public class Main \{\par
+    \par
+    public static void main(String args[]) \{\par
+        AdjList a = new AdjList(7);\par
+        a.addEdge(1, 1);\par
+        a.addEdge(1, 2);\par
+        a.addEdge(1, 3);\par
+        a.addEdge(1, 4);\par
+        a.addEdge(1, 0);\par
+        a.addEdge(2, 2);\par
+        a.addEdge(2, 3);\par
+        a.addEdge(2, 4);    \par
+        a.addEdge(2, 0);\par
+        a.addEdge(3, 3);    \par
+        a.addEdge(3, 4);\par
+        a.addEdge(3, 0);    \par
+        a.addEdge(4, 4);\par
+        a.addEdge(4, 0);\par
+        a.addEdge(0, 5);\par
+    \par
+        a.print();\par
+        \par
+        System.out.println("Number of self loops : " + a.noSelfLoop());\par
+        System.out.println("This vertex has self loop or not : " + a.checkSelfLoop(4));\par
+        \par
+        System.out.println("Degree of this vertex : " + a.findDegree(1));\par
+        System.out.println("Degree of every vertex : ");\par
+        ArrayList<Integer> al = a.findEachDegree();\par
+        Object arr[] = al.toArray();\par
+        for(int i = 0; i < arr.length; i++) \{\par
+            System.out.println(i + "->" + arr[i]);\par
+        \}\par
+        \par
+        int max = Collections.max(al);\par
+        System.out.println("Maximum degree = " + max);\par
+        \par
+        System.out.println("Number of edges : " + a.noOfEdges());\par
+        System.out.println("Average degree : " + 2 * a.noOfEdges() / a.vertex());\par
+        \par
+        System.out.println("DFS traversal : ");\par
+        a.DFS();\par
+        \par
+        System.out.println("\\nConnected components are : " + a.showConnected());\par
+        \par
+        System.out.println("Check whether the graph has cycle or not : " + a.checkCycle());\par
+        \par
+        int parent[] = a.Parents();\par
+        System.out.println("Parents are : ");\par
+        for(int i = 0; i < parent.length; i++) \{\par
+            System.out.print(parent[i] + " ");\par
+        \}\par
+        \par
+        System.out.println("\\nLca is =  " + a.LCA(2, 5, 0));\par
+        \par
+    \}\par
+\}\par
+}
+ 
